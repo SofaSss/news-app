@@ -1,0 +1,12 @@
+{
+  "allNews": "All news",
+  "@allNews": {
+    "description": "description of the page with all the news"
+  },
+
+  "goToTheSource" : "Go to the source",
+  "@goToTheSource": {
+    "description": "go to the website for this news"
+  }
+
+}
