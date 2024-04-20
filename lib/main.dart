@@ -1,44 +1,43 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:news_app/news_list.dart';
+import 'package:news_app/pages/news_page.dart';
+import 'package:news_app/repositories/news/news_repository.dart';
 import 'package:news_app/themes/theme.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import 'bloc/news_list_bloc/news_list_bloc.dart';
+import 'generated/l10n.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const NewsApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class NewsApp extends StatefulWidget {
+  const NewsApp({super.key});
+
+  @override
+  State<NewsApp> createState() => _NewsAppState();
+}
+
+class _NewsAppState extends State<NewsApp> {
+  final dio = Dio();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'News app',
-      //locale: Locale('en'),
-      // localizationsDelegates: const [
-      //   GlobalMaterialLocalizations.delegate,
-      //   GlobalWidgetsLocalizations.delegate,
-      //   GlobalCupertinoLocalizations.delegate,
-      // ],
-      // supportedLocales: const [
-      //   Locale('en'), // English
-      //   Locale('ru'),
-      // ],
-      localizationsDelegates: AppLocalizations.localizationsDelegates, //подключаемые модули которые отвечают за конкретные аспекты
-      supportedLocales:  AppLocalizations.supportedLocales, //подключенные языки
-      theme: createLightTheme(),
-
-     home:  Builder(
-       builder: (context) {
-         return NewsList(
-             title: AppLocalizations.of(context)?.allNews ?? 'cyka'  //если левый от ? равен нул, то генерация завершается
-         );
-       },
-     ),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: AppLocalizations.delegate.supportedLocales,
+      theme: Themes.lightTheme,
+      // routerConfig: _appRouter.config(),
+      home: BlocProvider(
+        create: (BuildContext context) => NewsAppBloc(NewsRepository()),
+        child: const NewsPage(),
+      ),
     );
   }
 }
-
-

@@ -1,3 +1,0 @@
-arb-dir: lib/l10n #обеспечиваем локализацию
-template-arb-file: app_en.arb #инстолим английский шаблон
-output-localization-file: app_localizations.dart #генерируем локализацию в файле app_localizations.dart
