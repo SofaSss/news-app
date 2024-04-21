@@ -1,5 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/bloc/auth_bloc/auth_bloc.dart';
+import 'package:news_app/bloc/tabs/tabs_bloc.dart';
+import 'package:news_app/pages/news_page.dart';
+import 'package:news_app/repositories/dto/sign_up_dto.dart';
 
 void main() {
   runApp(const MaterialApp(home: RegisterForm()));
@@ -108,9 +113,14 @@ class _RegisterFormState extends State<RegisterForm> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              // Валидация успешна, можно выполнить действие по регистрации
-                              // Можно отправить данные на сервер или выполнить другие действия
-                              // Например, Navigator.push для перехода на другую страницу
+                              String name = _nameController.text;
+                              String email = _emailController.text;
+                              String password = _passwordController.text;
+                              BlocProvider.of<AuthBloc>(context).add(SignUpEvent(SignUpDto(name, email, password),
+                                      () => BlocProvider.of<TabsBloc>(context).add(ChangeTabs(0))
+                                    )
+                              );
+
                             }
                           },
                           style: ButtonStyle(

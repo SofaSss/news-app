@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/bloc/auth_bloc/auth_bloc.dart';
 import 'package:news_app/bloc/news_list_bloc/news_list_bloc.dart';
 import 'package:news_app/widgets/error_widget.dart';
 import 'package:news_app/widgets/news_card_widget.dart';
@@ -22,6 +23,10 @@ class _NewsListState extends State<NewsList> {
 
   NewsAppBloc getBloc() {
     return BlocProvider.of<NewsAppBloc>(context);
+  }
+
+  AuthBloc getAuthBloc() {
+    return BlocProvider.of<AuthBloc>(context);
   }
 
   @override
@@ -78,6 +83,7 @@ class _NewsListState extends State<NewsList> {
                                 strokeWidth: 1.5,
                                 color: Colors.blue,
                               ),
+
                             ),
                           );
                         }

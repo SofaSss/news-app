@@ -2,9 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:news_app/bloc/auth_bloc/auth_bloc.dart';
+import 'package:news_app/bloc/tabs/tabs_bloc.dart';
 import 'package:news_app/pages/news_page.dart';
+import 'package:news_app/pages/sign_up.dart';
 import 'package:news_app/repositories/news/news_repository.dart';
+import 'package:news_app/repositories/news/users_api.dart';
 import 'package:news_app/themes/theme.dart';
+import 'package:retrofit/dio.dart';
 import 'bloc/news_list_bloc/news_list_bloc.dart';
 import 'generated/l10n.dart';
 
@@ -19,8 +24,10 @@ class NewsApp extends StatefulWidget {
   State<NewsApp> createState() => _NewsAppState();
 }
 
+final baseHeaders = <String, String>{"Content-Type": "application/json"};
+
 class _NewsAppState extends State<NewsApp> {
-  final dio = Dio();
+  final dio = Dio(BaseOptions(headers: baseHeaders));
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +41,19 @@ class _NewsAppState extends State<NewsApp> {
       supportedLocales: AppLocalizations.delegate.supportedLocales,
       theme: Themes.lightTheme,
       // routerConfig: _appRouter.config(),
-      home: BlocProvider(
-        create: (BuildContext context) => NewsAppBloc(NewsRepository()),
-        child: const NewsPage(),
-      ),
+      home: MultiBlocProvider(
+          providers: [
+            BlocProvider<NewsAppBloc>(
+              create: (BuildContext context) => NewsAppBloc(NewsRepository()),
+            ),
+            BlocProvider<AuthBloc>(
+              create: (BuildContext context) => AuthBloc(UserRepository(dio)),
+            ),
+            BlocProvider<TabsBloc>(
+              create: (BuildContext context) => TabsBloc(),
+            ),
+          ],
+          child: const NewsPage()),
     );
   }
 }

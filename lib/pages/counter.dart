@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/bloc/auth_bloc/auth_bloc.dart';
 
 class Counter extends StatefulWidget {
   const Counter({super.key});
@@ -33,7 +35,7 @@ class _CounterState extends State<Counter> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
              Text(
-              '$counter',
+              '$counter User id: ${BlocProvider.of<AuthBloc>(context).state.user?.id}',
               style: Theme.of(context).textTheme.headlineLarge,
             ),
             Row(

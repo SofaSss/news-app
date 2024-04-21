@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:news_app/repositories/models/api.dart';
 import 'package:news_app/repositories/news/news_repository.dart';
 import '../../repositories/models/news_model.dart';
 
