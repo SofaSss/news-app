@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:news_app/repositories/dto/sign_up_dto.dart';
 import 'package:news_app/repositories/dto/user_article.dart';
 import 'package:news_app/repositories/models/user_articles_model.dart';
@@ -24,8 +23,9 @@ abstract class UserRepository {
   Future<UserModel> signIn(@Body() SignInDto signIpDto);
 
   @POST('/user-articles/')
-  Future<UserArticlesModel> createUserArticle(@Body() UserArticleCreateDto userArticleCreateDto);
+  Future<UserArticlesModel> createUserArticle(
+      @Body() UserArticleCreateDto userArticleCreateDto);
 
   @DELETE('/user-articles/{id}/')
-  Future<UserModel> deleteUserArticle(@Path('id') int id);
+  Future<void> deleteUserArticle(@Path('id') int id);
 }

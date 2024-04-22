@@ -7,8 +7,8 @@ part of 'sign_in_dto.dart';
 // **************************************************************************
 
 SignInDto _$SignInDtoFromJson(Map<String, dynamic> json) => SignInDto(
-      json['password'] as String,
       json['login'] as String,
+      json['password'] as String,
     );
 
 Map<String, dynamic> _$SignInDtoToJson(SignInDto instance) => <String, dynamic>{

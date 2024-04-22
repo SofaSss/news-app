@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/bloc/auth_bloc/auth_bloc.dart';
+import 'package:news_app/bloc/tabs/tabs_bloc.dart';
+import 'package:news_app/repositories/dto/sign_in_dto.dart';
 
 void main() {
   runApp(const MaterialApp(home: LoginFormForm()));
@@ -14,9 +18,23 @@ class LoginFormForm extends StatefulWidget {
 
 class _LoginFormFormState extends State<LoginFormForm> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  String? errorMessage;
+  bool isLoading = false;
+
+  void setErrorMessage(String? m) {
+    setState(() {
+      errorMessage = m;
+    });
+  }
+
+  void setLoading(bool loading) {
+    setState(() {
+      isLoading = loading;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +57,12 @@ class _LoginFormFormState extends State<LoginFormForm> {
             right: 0,
             child: Column(
               children: [
-                const SizedBox(height: 20.0),
+                Center(
+                  child: Text(errorMessage ?? "",
+                      style: const TextStyle(
+                        color: Colors.red,
+                      )),
+                ),
                 Form(
                   key: _formKey,
                   child: Column(
@@ -64,7 +87,7 @@ class _LoginFormFormState extends State<LoginFormForm> {
                           keyboardType: TextInputType.emailAddress,
                         ),
                       ),
-                      SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
                       Padding(
                         padding: const EdgeInsets.only(left: 12, right: 12),
                         child: CupertinoTextField(
@@ -89,13 +112,27 @@ class _LoginFormFormState extends State<LoginFormForm> {
                         padding: const EdgeInsets.only(left: 50, right: 50),
                         width: 10,
                         child: ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              // Валидация успешна, можно выполнить действие по регистрации
-                              // Можно отправить данные на сервер или выполнить другие действия
-                              // Например, Navigator.push для перехода на другую страницу
-                            }
-                          },
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  if (_formKey.currentState!.validate()) {
+                                    String email = _emailController.text;
+                                    String password = _passwordController.text;
+
+                                    setLoading(true);
+                                    setErrorMessage(null);
+                                    BlocProvider.of<AuthBloc>(context).add(
+                                        SignInEvent(SignInDto(email, password),
+                                            () {
+                                      BlocProvider.of<TabsBloc>(context)
+                                          .add(ChangeTabs(0));
+                                      setLoading(false);
+                                    }, (m) {
+                                      setLoading(false);
+                                      setErrorMessage(m);
+                                    }));
+                                  }
+                                },
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(
                               const Color.fromRGBO(217, 234, 250, 1.0),
@@ -118,7 +155,7 @@ class _LoginFormFormState extends State<LoginFormForm> {
                               ),
                             ),
                           ),
-                          child: const Text('Войти'),
+                          child: Text(isLoading ? 'Загрузка...' : 'Войти'),
                         ),
                       ),
                       Positioned(
@@ -128,7 +165,8 @@ class _LoginFormFormState extends State<LoginFormForm> {
                         child: Center(
                           child: TextButton(
                             onPressed: () {
-                              // Действие, которое происходит при нажатии на кнопку
+                              BlocProvider.of<TabsBloc>(context)
+                                  .add(ChangeTabs(2));
                             },
                             child: Container(
                               decoration: const BoxDecoration(
@@ -163,7 +201,6 @@ class _LoginFormFormState extends State<LoginFormForm> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();

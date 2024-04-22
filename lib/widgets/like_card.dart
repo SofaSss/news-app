@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/bloc/auth_bloc/auth_bloc.dart';
 import 'package:news_app/bloc/news_list_bloc/news_list_bloc.dart';
+import 'package:news_app/repositories/models/news_model.dart';
 
 import '../bloc/tabs/tabs_bloc.dart';
 import '../pages/news_details_screen.dart';
 
-class NewsCardWidget extends StatefulWidget {
-  final int index;
+class LikeCardWidget extends StatefulWidget {
+  final NewsModel news;
+  final Future<void> Function() onFinish;
 
-  const NewsCardWidget({super.key, required this.index});
+  const LikeCardWidget({super.key, required this.news, required this.onFinish});
 
   @override
-  State<NewsCardWidget> createState() => _NewsCardWidgetState();
+  State<LikeCardWidget> createState() => _NewsCardWidgetState();
 }
 
-class _NewsCardWidgetState extends State<NewsCardWidget> {
+class _NewsCardWidgetState extends State<LikeCardWidget> {
   AuthBloc getAuthBloc() {
     return BlocProvider.of<AuthBloc>(context);
   }
@@ -37,7 +39,7 @@ class _NewsCardWidgetState extends State<NewsCardWidget> {
     return BlocBuilder<NewsAppBloc, NewsListState>(
       builder: (context, state) {
         return BlocBuilder<AuthBloc, AuthState>(builder: (context, authState) {
-          final currentArticle = state.news[widget.index];
+          final currentArticle = widget.news;
           final isFilled = authState.user != null &&
               authState.user!.user_articles
                   .any((a) => a.article_id == currentArticle.id);
@@ -47,7 +49,7 @@ class _NewsCardWidgetState extends State<NewsCardWidget> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => NewsDetailsScreen(
-                    id: state.news[widget.index].id,
+                    id: widget.news.id,
                   ),
                 ),
               );
@@ -59,7 +61,7 @@ class _NewsCardWidgetState extends State<NewsCardWidget> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(5),
                     child: Image.network(
-                      state.news[widget.index].image_url,
+                      widget.news.image_url,
                       height: 70,
                       width: 70,
                       fit: BoxFit.cover,
@@ -84,13 +86,13 @@ class _NewsCardWidgetState extends State<NewsCardWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              state.news[widget.index].title,
+                              widget.news.title,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             Text(
-                              state.news[widget.index].summary,
+                              widget.news.summary,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.labelMedium,
@@ -124,12 +126,16 @@ class _NewsCardWidgetState extends State<NewsCardWidget> {
                                 if (isFilled) {
                                   getAuthBloc().add(
                                       RemoveUserArticle(currentArticle.id, () {
-                                    setLoading(false);
+                                    widget.onFinish().then((value) {
+                                      setLoading(false);
+                                    });
                                   }));
                                 } else {
                                   getAuthBloc().add(
                                       AddUserArticle(currentArticle.id, () {
-                                    setLoading(false);
+                                    widget.onFinish().then((value) {
+                                      setLoading(false);
+                                    });
                                   }));
                                 }
                               },
